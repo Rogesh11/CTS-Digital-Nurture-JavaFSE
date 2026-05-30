@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Community Event Portal</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Segoe UI,sans-serif;background:#f4f7fb}
+header{background:#0d47a1;color:white;padding:20px;text-align:center}
+nav{background:#1565c0;padding:12px;text-align:center;position:sticky;top:0}
+nav a{color:white;text-decoration:none;margin:0 15px;font-weight:bold}
+nav a:hover{color:yellow}
+section{padding:30px}
+.banner{background:linear-gradient(135deg,#2196f3,#673ab7);color:white;padding:40px;border-radius:10px;text-align:center}
+.highlight{background:yellow;padding:2px 5px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px}
+.card{background:white;padding:15px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.card img{width:100%;height:180px;border-radius:10px;cursor:pointer}
+form{background:white;padding:20px;border-radius:10px}
+input,select,textarea,button{width:100%;padding:10px;margin-top:10px}
+button{background:#1565c0;color:white;border:none;cursor:pointer}
+button:hover{background:#0d47a1}
+footer{background:#0d47a1;color:white;text-align:center;padding:15px}
+#map,#fee,#chars,#location,#videoStatus{margin-top:10px;font-weight:bold}
+</style>
+</head>
+<body>
+
+<header>
+<h1>Smart Community Event Portal</h1>
+<p>Connect • Participate • Grow</p>
+</header>
+
+<nav>
+<a href="#home">Home</a>
+<a href="#events">Events</a>
+<a href="#register">Register</a>
+<a href="#gallery">Gallery</a>
+<a href="#contact">Contact</a>
+<a href="help.html" target="_blank">Help</a>
+</nav>
+
+<section id="home">
+<div class="banner">
+<h2>Welcome Residents</h2>
+<p>Join exciting community activities. <span style="color:#ffeb3b;font-weight:bold;">Early Bird Offer Available!</span></p>
+</div>
+</section>
+
+<section id="events">
+<h2>Upcoming Events</h2><br>
+<div class="cards">
+<div class="card">
+<img src="https://images.unsplash.com/photo-1511578314322-379afb476865?w=800" ondblclick="enlarge(this)">
+<h3>Music Festival</h3>
+<p>Live performances and food stalls.</p>
+</div>
+<div class="card">
+<img src="https://images.unsplash.com/photo-1517649763962-0c623066013b?w=800" ondblclick="enlarge(this)">
+<h3>Sports Day</h3>
+<p>Competitions and fun games.</p>
+</div>
+<div class="card">
+<img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800" ondblclick="enlarge(this)">
+<h3>Tech Workshop</h3>
+<p>Learn modern technologies.</p>
+</div>
+</div>
+</section>
+
+<section id="register">
+<h2>Event Registration</h2><br>
+<form>
+<input type="text" placeholder="Full Name" required autofocus>
+<input type="email" placeholder="Email Address" required>
+
+<input type="text" id="phone" placeholder="Phone Number" onblur="validatePhone()">
+
+<input type="date" required>
+
+<select id="eventType" onchange="showFee()">
+<option value="">Select Event</option>
+<option value="100">Music Festival</option>
+<option value="150">Sports Day</option>
+<option value="250">Tech Workshop</option>
+</select>
+
+<div id="fee"></div>
+
+<textarea placeholder="Message"></textarea>
+
+<textarea id="feedback" placeholder="Feedback..." onkeyup="countChars()"></textarea>
+<div id="chars">Characters: 0</div>
+
+<button type="button" onclick="register()">Register Event</button>
+<output id="output"></output>
+</form>
+
+<br>
+<button onclick="findLocation()">Find Nearby Events</button>
+<div id="location"></div>
+
+<br>
+<button onclick="clearData()">Clear Preferences</button>
+</section>
+
+<section id="gallery">
+<h2>Community Promo</h2><br>
+
+<video width="500" controls oncanplay="videoReady()">
+<source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+</video>
+<div id="videoStatus"></div>
+
+</section>
+
+<section id="contact">
+<h2>Contact Us</h2>
+<p>Email: community@cityportal.com</p>
+<p>Phone: +91 9876543210</p>
+<p>
+<a href="https://www.google.com/maps" target="_blank">Open Google Maps</a>
+</p>
+</section>
+
+<footer>
+<p>© 2026 Smart Community Event Portal</p>
+</footer>
+
+<script>
+function validatePhone(){
+ let p=document.getElementById("phone").value;
+ if(p && !/^[0-9]{10}$/.test(p)){
+  alert("Enter a valid 10-digit phone number");
+ }
+}
+
+function showFee(){
+ let fee=document.getElementById("eventType").value;
+ document.getElementById("fee").innerHTML="Event Fee: ₹"+fee;
+ localStorage.setItem("eventFee",fee);
+}
+
+window.onload=function(){
+ let saved=localStorage.getItem("eventFee");
+ if(saved){
+  document.getElementById("fee").innerHTML="Saved Event Fee: ₹"+saved;
+ }
+}
+
+function register(){
+ document.getElementById("output").value="Registration Successful!";
+ alert("Registration Successful!");
+}
+
+function countChars(){
+ document.getElementById("chars").innerHTML="Characters: "+document.getElementById("feedback").value.length;
+}
+
+function enlarge(img){
+ img.style.transform="scale(1.15)";
+}
+
+function videoReady(){
+ document.getElementById("videoStatus").innerHTML="Video Ready To Play";
+}
+
+function findLocation(){
+ navigator.geolocation.getCurrentPosition(
+ function(pos){
+ document.getElementById("location").innerHTML=
+ "Latitude: "+pos.coords.latitude+"<br>Longitude: "+pos.coords.longitude;
+ },
+ function(err){
+ document.getElementById("location").innerHTML="Location Error: "+err.message;
+ },
+ {enableHighAccuracy:true,timeout:10000}
+ );
+}
+
+function clearData(){
+ localStorage.clear();
+ sessionStorage.clear();
+ alert("Preferences Cleared");
+}
+
+window.onbeforeunload=function(){
+ return "Unsaved form data may be lost.";
+}
+</script>
+
+</body>
+</html>
