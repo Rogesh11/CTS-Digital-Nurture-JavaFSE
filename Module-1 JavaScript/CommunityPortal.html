@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Local Community Event Portal</title>
+
+<style>
+
+body{
+    font-family:Arial,sans-serif;
+    background-color:#f4f6f9;
+    margin:0;
+    padding:20px;
+}
+
+h1{
+    text-align:center;
+    background:#2c3e50;
+    color:white;
+    padding:15px;
+    border-radius:8px;
+}
+
+h2{
+    color:#2c3e50;
+}
+
+h3{
+    margin-top:0;
+}
+
+#categoryFilter,
+#searchBox,
+input,
+select{
+    padding:8px;
+    margin:5px;
+    border:1px solid #ccc;
+    border-radius:5px;
+}
+
+button{
+    background:#3498db;
+    color:white;
+    border:none;
+    padding:8px 15px;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#2980b9;
+}
+
+.event{
+    background:white;
+    border-left:5px solid #3498db;
+    padding:15px;
+    margin:15px 0;
+    border-radius:8px;
+    box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+
+#eventContainer{
+    margin-top:20px;
+}
+
+form{
+    background:white;
+    padding:20px;
+    border-radius:8px;
+    box-shadow:0 2px 5px rgba(0,0,0,0.1);
+    max-width:400px;
+}
+
+#loading{
+    display:none;
+    color:#3498db;
+    font-weight:bold;
+    margin:10px 0;
+}
+
+.error{
+    color:red;
+    font-size:14px;
+}
+
+.success{
+    color:green;
+    font-weight:bold;
+}
+
+hr{
+    margin:30px 0;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>Local Community Event Portal</h1>
+
+<h3>Filter Events</h3>
+
+<div>
+
+<label><b>Category:</b></label>
+
+<select id="categoryFilter">
+    <option value="All">All</option>
+    <option value="Music">Music</option>
+    <option value="Health">Health</option>
+    <option value="Art">Art</option>
+</select>
+
+<input type="text" id="searchBox" placeholder="Search Event">
+
+</div>
+
+<div id="loading">Loading Events...</div>
+
+<div id="eventContainer"></div>
+
+<hr>
+
+<h2>Event Registration Form</h2>
+
+<form id="registrationForm">
+
+    <input type="text" name="name" placeholder="Enter Name">
+
+    <span id="nameError" class="error"></span>
+
+    <br><br>
+
+    <input type="email" name="email" placeholder="Enter Email">
+
+    <span id="emailError" class="error"></span>
+
+    <br><br>
+
+    <select name="event">
+        <option>Music Night</option>
+        <option>Health Camp</option>
+        <option>Art Exhibition</option>
+    </select>
+
+    <br><br>
+
+    <button id="registerBtn" type="submit">
+        Register
+    </button>
+
+</form>
+
+<p id="message"></p>
+
+<script>
+
+
+console.log("Welcome to the Community Portal");
+
+window.onload=function(){
+    alert("Page Fully Loaded");
+};
+
+
+const eventName="Music Night";
+const eventDate="15 June 2026";
+
+let seats=10;
+
+console.log(`${eventName} on ${eventDate}`);
+
+
+class Event{
+
+    constructor(name,category,seats,date){
+
+        this.name=name;
+        this.category=category;
+        this.seats=seats;
+        this.date=date;
+    }
+}
+
+Event.prototype.checkAvailability=function(){
+
+    return this.seats>0;
+};
+
+let events=[
+
+    new Event(
+        "Music Night",
+        "Music",
+        10,
+        "2026-06-15"
+    ),
+
+    new Event(
+        "Health Camp",
+        "Health",
+        0,
+        "2026-06-20"
+    )
+];
+
+
+events.push(
+
+    new Event(
+        "Art Exhibition",
+        "Art",
+        15,
+        "2026-06-25"
+    )
+);
+
+
+let musicEvents=
+events.filter(
+    e=>e.category==="Music"
+);
+
+console.log("Music Events",musicEvents);
+
+
+let displayCards=
+events.map(
+    e=>`Workshop on ${e.name}`
+);
+
+console.log(displayCards);
+
+
+function addEvent(event){
+
+    events.push(event);
+}
+
+let registrations=0;
+
+function registerUser(eventObj){
+
+    try{
+
+        if(eventObj.seats<=0){
+
+            throw new Error(
+                "No seats available"
+            );
+        }
+
+        registrations++;
+
+        eventObj.seats--;
+
+        renderEvents(events);
+
+        console.log(
+            "Registration Count:",
+            registrations
+        );
+
+    }
+
+    catch(error){
+
+        alert(error.message);
+    }
+}
+
+function filterEventsByCategory(category){
+
+    return events.filter(
+        e=>category==="All" ||
+        e.category===category
+    );
+}
+
+
+function registrationTracker(){
+
+    let total=0;
+
+    return function(){
+
+        total++;
+
+        return total;
+    };
+}
+
+const trackMusicRegistration=
+registrationTracker();
+
+console.log(
+    "Closure Example:",
+    trackMusicRegistration()
+);
+
+function dynamicFilter(callback){
+
+    return events.filter(callback);
+}
+
+console.log(
+
+    dynamicFilter(
+        event=>event.category==="Music"
+    )
+);
+
+events.forEach(event=>{
+
+    if(event.seats>0){
+
+        console.log(
+            `${event.name} Available`
+        );
+    }
+
+    else{
+
+        console.log(
+            `${event.name} Full`
+        );
+    }
+});
+
+Object.entries(events[0])
+
+.forEach(
+
+([key,value])=>{
+
+    console.log(key,value);
+
+});
+
+
+const [firstEvent]=events;
+
+console.log(firstEvent);
+
+const clonedEvents=[...events];
+
+console.log(clonedEvents);
+
+/* DOM Manipulation */
+
+function renderEvents(eventList){
+
+    let container=
+
+    document.querySelector(
+        "#eventContainer"
+    );
+
+    container.innerHTML="";
+
+    eventList.forEach(event=>{
+
+        let card=
+        document.createElement("div");
+
+        card.className="event";
+
+        card.innerHTML=
+
+        `<h3>${event.name}</h3>
+        <p>Category: ${event.category}</p>
+        <p>Seats: ${event.seats}</p>`;
+
+        let button=
+        document.createElement("button");
+
+        button.innerText="Register";
+
+        button.onclick=function(){
+
+            registerUser(event);
+        };
+
+        card.appendChild(button);
+
+        container.appendChild(card);
+    });
+}
+
+renderEvents(events);
+
+
+document
+
+.querySelector("#categoryFilter")
+
+.onchange=function(){
+
+    renderEvents(
+
+        filterEventsByCategory(
+            this.value
+        )
+    );
+};
+
+document
+
+.querySelector("#searchBox")
+
+.addEventListener(
+
+"keydown",
+
+function(){
+
+    let text=
+
+    this.value.toLowerCase();
+
+    let result=
+
+    events.filter(
+
+        e=>
+
+        e.name
+
+        .toLowerCase()
+
+        .includes(text)
+
+    );
+
+    renderEvents(result);
+});
+
+
+document
+
+.querySelector("#registrationForm")
+
+.addEventListener(
+
+"submit",
+
+function(event){
+
+    event.preventDefault();
+
+    let form=this;
+
+    let name=
+    form.elements["name"].value;
+
+    let email=
+    form.elements["email"].value;
+
+    document
+
+    .getElementById("nameError")
+
+    .innerHTML="";
+
+    document
+
+    .getElementById("emailError")
+
+    .innerHTML="";
+
+    let valid=true;
+
+    if(name===""){
+
+        document
+
+        .getElementById("nameError")
+
+        .innerHTML=
+
+        " Name Required";
+
+        valid=false;
+    }
+
+    if(email===""){
+
+        document
+
+        .getElementById("emailError")
+
+        .innerHTML=
+
+        " Email Required";
+
+        valid=false;
+    }
+
+    if(!valid){
+
+        return;
+    }
+
+    document
+
+    .getElementById("message")
+
+    .className="success";
+
+    document
+
+    .getElementById("message")
+
+    .innerHTML=
+
+    "Registration Successful";
+
+    sendRegistration();
+});
+
+
+fetch(
+
+"https://jsonplaceholder.typicode.com/posts/1"
+
+)
+
+.then(
+
+response=>response.json()
+
+)
+
+.then(
+
+data=>console.log(data)
+
+)
+
+.catch(
+
+error=>console.log(error)
+
+);
+
+async function loadEvents(){
+
+    document
+
+    .getElementById("loading")
+
+    .style.display="block";
+
+    try{
+
+        let response=
+
+        await fetch(
+
+        "https://jsonplaceholder.typicode.com/posts/1"
+
+        );
+
+        let data=
+
+        await response.json();
+
+        console.log(data);
+    }
+
+    catch(error){
+
+        console.log(error);
+    }
+
+    document
+
+    .getElementById("loading")
+
+    .style.display="none";
+}
+
+loadEvents();
+
+
+function sendRegistration(){
+
+    setTimeout(()=>{
+
+        fetch(
+
+        "https://jsonplaceholder.typicode.com/posts",
+
+        {
+
+            method:"POST",
+
+            headers:{
+
+                "Content-Type":
+                "application/json"
+            },
+
+            body:JSON.stringify({
+
+                user:"Community User"
+
+            })
+
+        })
+
+        .then(
+
+        response=>response.json()
+
+        )
+
+        .then(data=>{
+
+            console.log(
+                "Success",
+                data
+            );
+
+        })
+
+        .catch(error=>{
+
+            console.log(
+                "Failure",
+                error
+            );
+
+        });
+
+    },2000);
+}
+
+
+console.log(
+    "Debug: Script Running"
+);
+
+</script>
+
+</body>
+</html>
